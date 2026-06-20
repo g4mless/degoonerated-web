@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Model Card · Degoonerated</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #00296b;
+      --panel: #171a21;
+      --border: #272b35;
+      --text: #e6e8ec;
+      --muted: #9aa0ac;
+      --accent: #6366f1;
+      --gold: #fdc500;
+      --danger: #ef4444;
+      --ok: #22c55e;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "JetBrains Mono", monospace;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      padding: 32px 16px;
+      line-height: 1.6;
+    }
+    .wrap { width: 100%; max-width: 640px; }
+
+    nav { margin-bottom: 18px; font-size: 13px; }
+    nav a { color: var(--gold); text-decoration: none; border-bottom: 1px solid transparent; }
+    nav a:hover { border-bottom-color: var(--gold); }
+
+    h1 { font-size: 24px; margin: 0 0 4px; }
+    .lead { color: var(--muted); font-size: 13px; margin: 0 0 28px; }
+
+    h2 {
+      font-size: 15px; text-transform: uppercase; letter-spacing: 1px;
+      color: var(--gold); margin: 32px 0 12px; border-bottom: 1px solid var(--border);
+      padding-bottom: 6px;
+    }
+    p { font-size: 13.5px; margin: 0 0 12px; }
+    ul { font-size: 13.5px; margin: 0 0 12px; padding-left: 20px; }
+    li { margin-bottom: 4px; }
+
+    table {
+      width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 12px;
+    }
+    th, td {
+      text-align: left; padding: 8px 10px; border: 1px solid var(--border);
+      vertical-align: top;
+    }
+    th { background: #f0f0f0; color: #1a1a1a; width: 38%; font-weight: 600; border-color: #d0d0d0; }
+    td { background: #ffffff; color: #222; border-color: #d0d0d0; }
+
+    code {
+      background: #f0f0f0; padding: 1px 5px; font-size: 12px; color: #444;
+    }
+    pre {
+      background: #ffffff; border: 1px solid #d0d0d0; padding: 14px;
+      overflow-x: auto; font-size: 12px; color: #222; margin: 0 0 12px;
+    }
+    pre code { background: transparent; padding: 0; color: #222; }
+    .todo {
+      color: #9a7b00; font-style: italic;
+    }
+    .note {
+      border-left: 3px solid var(--gold); padding: 8px 12px; background: rgba(253,197,0,.08);
+      font-size: 12.5px; color: var(--muted); margin: 0 0 12px;
+    }
+    .badges { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+    .badge {
+      font-size: 11px; border: 1px solid #d0d0d0; padding: 3px 8px; color: #333;
+      background: #ffffff;
+    }
+    footer { margin-top: 36px; font-size: 11px; color: var(--muted); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav><a href="index.html">← Back to Classifier</a></nav>
+
+    <h1>Degoonerated, Model Card</h1>
+    <p class="lead">An experimental binary image classifier that flags lewd anime images as <code>degenerated</code>, otherwise <code>normal</code>. Runs fully client-side in the browser via ONNX Runtime Web.</p>
+
+    <div class="badges">
+      <span class="badge">MobileNetV3-Small</span>
+      <span class="badge">ONNX · opset 17</span>
+      <span class="badge">2 classes</span>
+      <span class="badge">224×224 input</span>
+      <span class="badge">~5.9 MB</span>
+      <span class="badge">val acc 83.3%</span>
+    </div>
+
+    <h2>Overview</h2>
+    <p>This model takes a single RGB image and predicts whether it is <code>degenerated</code> (lewd/suggestive anime content) or <code>normal</code>. It is intended for lightweight, on-device content filtering and is <strong>experimental</strong>, not a moderation authority.</p>
+
+    <h2>Architecture</h2>
+    <p>The graph is a <strong>MobileNetV3-Small</strong> (torchvision) convolutional network: an efficient mobile architecture using depthwise-separable convolutions, Squeeze-and-Excitation blocks, and HardSwish/HardSigmoid activations. The final classifier layer was replaced with a 2-output linear head.</p>
+    <table>
+      <tr><th>Backbone</th><td>torchvision <code>mobilenet_v3_small</code></td></tr>
+      <tr><th>Graph ops</th><td>52× Conv, 19× HardSwish, 14× Relu, 10× GlobalAveragePool, 9× HardSigmoid, 2× Gemm (122 nodes total)</td></tr>
+      <tr><th>Classifier head</th><td><code>classifier[3]</code> replaced with <code>Linear(in, 2)</code> → 2 logits</td></tr>
+      <tr><th>Parameters</th><td>108 weight tensors · ~5.9 MB on disk (fp32)</td></tr>
+    </table>
+
+    <h2>Inputs &amp; Outputs</h2>
+    <table>
+      <tr><th>Input name</th><td><code>input</code></td></tr>
+      <tr><th>Input shape</th><td><code>[batch, 3, 224, 224]</code>, NCHW, float32</td></tr>
+      <tr><th>Output name</th><td><code>logits</code></td></tr>
+      <tr><th>Output shape</th><td><code>[batch, 2]</code>, raw logits (apply softmax)</td></tr>
+      <tr><th>Class order</th><td><code>0 = degenerated</code>, <code>1 = normal</code> (alphabetical, torchvision <code>ImageFolder</code> default)</td></tr>
+    </table>
+
+    <h2>Preprocessing</h2>
+    <p>Each image is transformed to match the training pipeline (standard torchvision / ImageNet):</p>
+    <ul>
+      <li>Resize so the shorter side is <strong>256 px</strong> (aspect-preserving)</li>
+      <li>Center-crop to <strong>224 × 224</strong></li>
+      <li>Convert to RGB, scale to <code>[0, 1]</code></li>
+      <li>Normalize with mean <code>[0.485, 0.456, 0.406]</code>, std <code>[0.229, 0.224, 0.225]</code></li>
+      <li>Layout as NCHW float32 tensor</li>
+    </ul>
+    <p>Inference output logits are passed through <strong>softmax</strong> to produce class probabilities.</p>
+
+    <h2>Training</h2>
+    <p>Fine-tuned in PyTorch on Google Colab. Transfer learning from ImageNet-pretrained MobileNetV3-Small, trained iteratively over <strong>6 versions</strong>, each run resumed from the previous checkpoint on a freshly reviewed batch of images, accumulating ~16k images total across all versions.</p>
+    <table>
+      <tr><th>Base weights</th><td>torchvision <code>MobileNet_V3_Small_Weights.DEFAULT</code> (ImageNet), fine-tuned end-to-end</td></tr>
+      <tr><th>Data source</th><td>~16k anime images scraped from the author's Twitter/X liked posts, hand-reviewed and labeled <code>degenerated</code> / <code>normal</code></td></tr>
+      <tr><th>Training scheme</th><td>6 resumed versions, each fine-tuning on a reviewed batch</td></tr>
+      <tr><th>Train / val split</th><td>80 / 20 per run (<code>split-folders</code>, seed 42)</td></tr>
+      <tr><th>Augmentations</th><td>Train: <code>RandomResizedCrop(224, scale 0.8–1.0)</code> + <code>RandomHorizontalFlip</code>. Val: <code>Resize(256)</code> → <code>CenterCrop(224)</code>. Both: ImageNet normalize.</td></tr>
+      <tr><th>Optimizer / LR</th><td>Adam, lr = 1e-4</td></tr>
+      <tr><th>Loss</th><td>CrossEntropyLoss</td></tr>
+      <tr><th>Epochs / batch size</th><td>10 epochs (this resumed run) · batch size 32</td></tr>
+      <tr><th>Hardware</th><td>Google Colab, T4 GPU</td></tr>
+      <tr><th>Export</th><td><code>torch.onnx.export</code> → ONNX (opset 17), input <code>input</code>, output <code>logits</code></td></tr>
+    </table>
+
+    <h2>Evaluation</h2>
+    <p>Measured on the 20% held-out validation split during training.</p>
+    <table>
+      <tr><th>Best val accuracy</th><td>83.3%</td></tr>
+      <tr><th>Final train accuracy</th><td>~93–94% (train accuracy outran val → mild overfitting)</td></tr>
+    </table>
+
+    <h2>Intended Use &amp; Limitations</h2>
+    <ul>
+      <li><strong>Intended:</strong> lightweight, private, on-device filtering of anime-style images.</li>
+      <li><strong>Domain:</strong> trained on anime imagery, accuracy on photos or other art styles is unknown and likely poor.</li>
+      <li><strong>Not</strong> a definitive content-moderation tool; "lewd" is subjective and label noise is expected.</li>
+      <li>Binary only, no severity grading or localization.</li>
+      <li>Predictions can be flipped by adversarial or out-of-distribution inputs.</li>
+    </ul>
+
+    <h2>How to Run</h2>
+    <p>Inference happens entirely in your browser; no image is uploaded. Serve the folder over HTTP and open localhost:</p>
+    <pre># for example here using python
+python -m http.server 8000
+# open http://localhost:8000</pre>
+
+    <footer>
+      Model card written by Claude, the author is too lazy to write one.
+    </footer>
+  </div>
+</body>
+</html>

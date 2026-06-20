@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Degoonerated Classifier</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #00296b;
+      --panel: #171a21;
+      --border: #272b35;
+      --text: #e6e8ec;
+      --muted: #9aa0ac;
+      --accent: #6366f1;
+      --danger: #ef4444;
+      --ok: #22c55e;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "JetBrains Mono", monospace;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      padding: 32px 16px;
+    }
+    .wrap { width: 100%; max-width: 520px; }
+    h1 { font-size: 22px; margin: 0 0 4px; }
+    .sub { color: var(--muted); font-size: 13px; margin-bottom: 24px; }
+    #status {
+      font-size: 13px; color: var(--muted);
+      margin-bottom: 16px; min-height: 18px;
+    }
+    #drop {
+      border-radius: 0;
+      padding: 36px 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color .15s, background .15s;
+      background: #ffffff;
+    }
+    #drop.hover { border-color: var(--accent); background: #f0f0f0; }
+    #drop p { margin: 0; color: #444; font-size: 14px; }
+    #preview {
+      display: none;
+      width: 100%;
+      max-height: 320px;
+      object-fit: contain;
+      border-radius: 0;
+      margin-top: 16px;
+      background: #000;
+      border: 1px solid var(--border);
+    }
+    .results { margin-top: 20px; display: none; }
+    .row { margin-bottom: 14px; }
+    .row .head {
+      display: flex; justify-content: space-between;
+      font-size: 14px; margin-bottom: 6px;
+    }
+    .bar { height: 10px; background: #23262f; border-radius: 0; overflow: hidden; }
+    .bar > span { display: block; height: 100%; width: 0; transition: width .4s ease; }
+    .bar.deg > span { background: var(--danger); }
+    .bar.norm > span { background: var(--ok); }
+    .verdict {
+      margin-top: 8px; font-size: 15px; font-weight: 600;
+    }
+    button.reset {
+      margin-top: 18px; background: #fdc500; color: var(--bg);
+      border: 1px solid var(--border); border-radius: 0;
+      padding: 8px 14px; cursor: pointer; font-size: 13px;
+    }
+    button.reset:hover { border-color: var(--accent); }
+    code { background: #f0f0f0; padding: 1px 5px; border-radius: 0; font-size: 12px; color: #444; }
+    nav { margin-bottom: 18px; font-size: 13px; }
+    nav a {
+      color: #fdc500; text-decoration: none; border-bottom: 1px solid transparent;
+    }
+    nav a:hover { border-bottom-color: #fdc500; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Degoonerated</h1>
+    <nav><a href="model-card.html">→ Model Card</a></nav>
+    <p class="sub">Image classifier (MobileNetV3) running in the browser locally using ONNX Runtime Web. Classes: <code>degenerated</code> / <code>normal</code>.
+    <br>This model is experimental and designed to detect lewd anime image as degenerated👀</p>
+
+    <div id="status">Loading model…</div>
+
+    <div id="drop">
+      <p>Click or drag an image here</p>
+      <input id="file" type="file" accept="image/*" hidden />
+    </div>
+
+    <img id="preview" alt="preview" />
+
+    <div class="results" id="results">
+      <div class="row">
+        <div class="head"><span>degenerated</span><span id="degPct">0%</span></div>
+        <div class="bar deg"><span id="degBar"></span></div>
+      </div>
+      <div class="row">
+        <div class="head"><span>normal</span><span id="normPct">0%</span></div>
+        <div class="bar norm"><span id="normBar"></span></div>
+      </div>
+      <div class="verdict" id="verdict"></div>
+      <button class="reset" id="reset">Try Another Image</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/dist/ort.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
