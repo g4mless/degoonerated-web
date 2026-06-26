@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Model Card · Degoonerated</title>
+  <title>Model Card · Goonable</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg: #00296b;
+      --bg: #000a1a;
       --panel: #171a21;
       --border: #272b35;
       --text: #e6e8ec;
@@ -55,17 +55,17 @@
       text-align: left; padding: 8px 10px; border: 1px solid var(--border);
       vertical-align: top;
     }
-    th { background: #f0f0f0; color: #1a1a1a; width: 38%; font-weight: 600; border-color: #d0d0d0; }
-    td { background: #ffffff; color: #222; border-color: #d0d0d0; }
+    th { background: #2a2f3a; color: #e6e8ec; width: 38%; font-weight: 600; border-color: #3a3f4a; }
+    td { background: #1e2228; color: #d0d0d0; border-color: #3a3f4a; }
 
     code {
-      background: #f0f0f0; padding: 1px 5px; font-size: 12px; color: #444;
+      background: #2a2f3a; padding: 1px 5px; font-size: 12px; color: #d0d0d0;
     }
     pre {
-      background: #ffffff; border: 1px solid #d0d0d0; padding: 14px;
-      overflow-x: auto; font-size: 12px; color: #222; margin: 0 0 12px;
+      background: #1e2228; border: 1px solid #3a3f4a; padding: 14px;
+      overflow-x: auto; font-size: 12px; color: #d0d0d0; margin: 0 0 12px;
     }
-    pre code { background: transparent; padding: 0; color: #222; }
+    pre code { background: transparent; padding: 0; color: #d0d0d0; }
     .todo {
       color: #9a7b00; font-style: italic;
     }
@@ -75,8 +75,8 @@
     }
     .badges { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
     .badge {
-      font-size: 11px; border: 1px solid #d0d0d0; padding: 3px 8px; color: #333;
-      background: #ffffff;
+      font-size: 11px; border: 1px solid #3a3f4a; padding: 3px 8px; color: #e6e8ec;
+      background: #2a2f3a;
     }
     footer { margin-top: 36px; font-size: 11px; color: var(--muted); }
   </style>
@@ -85,8 +85,8 @@
   <div class="wrap">
     <nav><a href="index.html">← Back to Classifier</a></nav>
 
-    <h1>Degoonerated, Model Card</h1>
-    <p class="lead">An experimental binary image classifier that flags lewd anime images as <code>degenerated</code>, otherwise <code>normal</code>. Runs fully client-side in the browser via ONNX Runtime Web.</p>
+    <h1>Goonable, Model Card</h1>
+    <p class="lead">An experimental binary image classifier that flags lewd anime images as <code>goonable</code>, otherwise <code>normal</code>. Runs fully client-side in the browser via ONNX Runtime Web.</p>
 
     <div class="badges">
       <span class="badge">MobileNetV3-Small</span>
@@ -98,7 +98,7 @@
     </div>
 
     <h2>Overview</h2>
-    <p>This model takes a single RGB image and predicts whether it is <code>degenerated</code> (lewd/suggestive anime content) or <code>normal</code>. It is intended for lightweight, on-device content filtering and is <strong>experimental</strong>, not a moderation authority.</p>
+    <p>This model takes a single RGB image and predicts whether it is <code>goonable</code> (lewd/suggestive anime content) or <code>normal</code>. It is intended for lightweight, on-device content filtering and is <strong>experimental</strong>, not a moderation authority.</p>
 
     <h2>Architecture</h2>
     <p>The graph is a <strong>MobileNetV3-Small</strong> (torchvision) convolutional network: an efficient mobile architecture using depthwise-separable convolutions, Squeeze-and-Excitation blocks, and HardSwish/HardSigmoid activations. The final classifier layer was replaced with a 2-output linear head.</p>
@@ -115,7 +115,7 @@
       <tr><th>Input shape</th><td><code>[batch, 3, 224, 224]</code>, NCHW, float32</td></tr>
       <tr><th>Output name</th><td><code>logits</code></td></tr>
       <tr><th>Output shape</th><td><code>[batch, 2]</code>, raw logits (apply softmax)</td></tr>
-      <tr><th>Class order</th><td><code>0 = degenerated</code>, <code>1 = normal</code> (alphabetical, torchvision <code>ImageFolder</code> default)</td></tr>
+      <tr><th>Class order</th><td><code>0 = goonable</code>, <code>1 = normal</code> (alphabetical, torchvision <code>ImageFolder</code> default)</td></tr>
     </table>
 
     <h2>Preprocessing</h2>
@@ -133,7 +133,7 @@
     <p>Fine-tuned in PyTorch on Google Colab. Transfer learning from ImageNet-pretrained MobileNetV3-Small, trained iteratively over <strong>6 versions</strong>, each run resumed from the previous checkpoint on a freshly reviewed batch of images, accumulating ~16k images total across all versions.</p>
     <table>
       <tr><th>Base weights</th><td>torchvision <code>MobileNet_V3_Small_Weights.DEFAULT</code> (ImageNet), fine-tuned end-to-end</td></tr>
-      <tr><th>Data source</th><td>~16k anime images scraped from the author's Twitter/X liked posts, hand-reviewed and labeled <code>degenerated</code> / <code>normal</code></td></tr>
+      <tr><th>Data source</th><td>~16k anime images scraped from the author's Twitter/X liked posts, hand-reviewed and labeled <code>goonable</code> / <code>normal</code></td></tr>
       <tr><th>Training scheme</th><td>6 resumed versions, each fine-tuning on a reviewed batch</td></tr>
       <tr><th>Train / val split</th><td>80 / 20 per run (<code>split-folders</code>, seed 42)</td></tr>
       <tr><th>Augmentations</th><td>Train: <code>RandomResizedCrop(224, scale 0.8–1.0)</code> + <code>RandomHorizontalFlip</code>. Val: <code>Resize(256)</code> → <code>CenterCrop(224)</code>. Both: ImageNet normalize.</td></tr>
@@ -167,7 +167,7 @@ python -m http.server 8000
 # open http://localhost:8000</pre>
 
     <footer>
-      Model card written by Claude, the author is too lazy to write one.
+      Model card written by LLM, the author is too lazy to write one.
     </footer>
   </div>
 </body>

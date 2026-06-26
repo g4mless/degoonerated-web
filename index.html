@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Degoonerated Classifier</title>
+  <title>Goonable Classifier</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg: #00296b;
+      --bg: #000a1a;
       --panel: #171a21;
       --border: #272b35;
       --text: #e6e8ec;
       --muted: #9aa0ac;
       --accent: #6366f1;
       --danger: #ef4444;
-      --ok: #22c55e;
+      --ok: #0044b0;
     }
     * { box-sizing: border-box; }
     body {
@@ -41,10 +41,10 @@
       text-align: center;
       cursor: pointer;
       transition: border-color .15s, background .15s;
-      background: #ffffff;
+      background: #2a2f3a;
     }
-    #drop.hover { border-color: var(--accent); background: #f0f0f0; }
-    #drop p { margin: 0; color: #444; font-size: 14px; }
+    #drop.hover { border-color: var(--accent); background: #353b45; }
+    #drop p { margin: 0; color: #d0d0d0; font-size: 14px; }
     #preview {
       display: none;
       width: 100%;
@@ -63,18 +63,19 @@
     }
     .bar { height: 10px; background: #23262f; border-radius: 0; overflow: hidden; }
     .bar > span { display: block; height: 100%; width: 0; transition: width .4s ease; }
-    .bar.deg > span { background: var(--danger); }
+    .bar.goon > span { background: var(--danger); }
     .bar.norm > span { background: var(--ok); }
     .verdict {
       margin-top: 8px; font-size: 15px; font-weight: 600;
     }
     button.reset {
-      margin-top: 18px; background: #fdc500; color: var(--bg);
+      margin-top: 18px; background: var(--accent); color: var(--text);
       border: 1px solid var(--border); border-radius: 0;
       padding: 8px 14px; cursor: pointer; font-size: 13px;
+      font-family: "JetBrains Mono", monospace;
     }
     button.reset:hover { border-color: var(--accent); }
-    code { background: #f0f0f0; padding: 1px 5px; border-radius: 0; font-size: 12px; color: #444; }
+    code { background: #2a2f3a; padding: 1px 5px; border-radius: 0; font-size: 12px; color: #d0d0d0; }
     nav { margin-bottom: 18px; font-size: 13px; }
     nav a {
       color: #fdc500; text-decoration: none; border-bottom: 1px solid transparent;
@@ -84,10 +85,10 @@
 </head>
 <body>
   <div class="wrap">
-    <h1>Degoonerated</h1>
+    <h1>Goonable</h1>
     <nav><a href="model-card.html">→ Model Card</a></nav>
-    <p class="sub">Image classifier (MobileNetV3) running in the browser locally using ONNX Runtime Web. Classes: <code>degenerated</code> / <code>normal</code>.
-    <br>This model is experimental and designed to detect lewd anime image as degenerated👀</p>
+    <p class="sub">Image classifier (MobileNetV3) running in the browser locally using ONNX Runtime Web. Classes: <code>goonable</code> / <code>normal</code>.
+    <br>This model is experimental and designed to detect lewd anime image as goonable👀</p>
 
     <div id="status">Loading model…</div>
 
@@ -100,8 +101,8 @@
 
     <div class="results" id="results">
       <div class="row">
-        <div class="head"><span>degenerated</span><span id="degPct">0%</span></div>
-        <div class="bar deg"><span id="degBar"></span></div>
+        <div class="head"><span>goonable</span><span id="goonPct">0%</span></div>
+        <div class="bar goon"><span id="goonBar"></span></div>
       </div>
       <div class="row">
         <div class="head"><span>normal</span><span id="normPct">0%</span></div>

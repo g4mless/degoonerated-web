@@ -1,11 +1,11 @@
-// Degoonerated image classifier — ONNX Runtime Web
+// Goonable image classifier — ONNX Runtime Web
 // Model: MobileNetV3 (torchvision), input [1,3,224,224] NCHW float32, output "logits" [1,2]
 
-const MODEL_URL = "degoonerated_model.onnx";
+const MODEL_URL = "goonable_model.onnx";
 
 // Urutan kelas mengikuti ImageFolder torchvision (alfabetis).
 // Kalau hasilnya kebalik, tinggal tukar urutan array ini.
-const CLASSES = ["degenerated", "normal"];
+const CLASSES = ["goonable", "normal"];
 
 // Preprocessing torchvision standar (ImageNet)
 const SIZE = 224;          // ukuran crop akhir
@@ -93,19 +93,19 @@ async function classify(img) {
 
 function render(probs) {
   // map prob to class index
-  const degIdx = CLASSES.indexOf("degenerated");
+  const goonIdx = CLASSES.indexOf("goonable");
   const normIdx = CLASSES.indexOf("normal");
-  const deg = probs[degIdx];
+  const goon = probs[goonIdx];
   const norm = probs[normIdx];
 
-  document.getElementById("degPct").textContent = (deg * 100).toFixed(1) + "%";
+  document.getElementById("goonPct").textContent = (goon * 100).toFixed(1) + "%";
   document.getElementById("normPct").textContent = (norm * 100).toFixed(1) + "%";
-  document.getElementById("degBar").style.width = deg * 100 + "%";
+  document.getElementById("goonBar").style.width = goon * 100 + "%";
   document.getElementById("normBar").style.width = norm * 100 + "%";
 
   const topIdx = probs.indexOf(Math.max(...probs));
   verdictEl.textContent = `Prediction: ${CLASSES[topIdx]} (${(probs[topIdx] * 100).toFixed(1)}%)`;
-  verdictEl.style.color = CLASSES[topIdx] === "degenerated" ? "#ef4444" : "#22c55e";
+  verdictEl.style.color = CLASSES[topIdx] === "goonable" ? "#ef4444" : "#0044b0";
 
   resultsEl.style.display = "block";
 }
