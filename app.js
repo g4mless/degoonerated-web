@@ -13,7 +13,6 @@ const RESIZE = 256;        // resize shorter-side sebelum center crop
 const MEAN = [0.485, 0.456, 0.406];
 const STD = [0.229, 0.224, 0.225];
 
-const statusEl = document.getElementById("status");
 const dropEl = document.getElementById("drop");
 const fileEl = document.getElementById("file");
 const previewEl = document.getElementById("preview");
@@ -29,10 +28,10 @@ async function init() {
     session = await ort.InferenceSession.create(MODEL_URL, {
       executionProviders: ["wasm"],
     });
-    statusEl.textContent = "Model ready. Select an image for classification.";
+    dropEl.style.opacity = "1";
   } catch (e) {
     console.error(e);
-    statusEl.innerHTML =
+    dropEl.innerHTML =
       "Failed to load model. Make sure the page is opened via an HTTP server " +
       "(not by double-clicking the file). See README.";
   }
@@ -79,7 +78,6 @@ function softmax(arr) {
 
 async function classify(img) {
   if (!session) return;
-  statusEl.textContent = "Processing…";
 
   const tensor = preprocess(img);
   const inputName = session.inputNames[0];
@@ -142,7 +140,6 @@ resetBtn.addEventListener("click", () => {
   previewEl.style.display = "none";
   previewEl.src = "";
   fileEl.value = "";
-  statusEl.textContent = "Model ready. Select an image for classification.";
 });
 
 init();
